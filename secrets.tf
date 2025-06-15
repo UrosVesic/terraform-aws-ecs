@@ -4,7 +4,7 @@ resource "random_password" "mysql_password" {
 }
 
 resource "aws_secretsmanager_secret" "mysql" {
-  name        = "mysql-master-user-secret-2"
+  name        = "mysql-master-user-secret-3"
   description = "Master user credentials"
   # lifecycle {
   #   prevent_destroy = true
