@@ -127,6 +127,10 @@ resource "aws_ecs_task_definition" "main" {
         {
           name  = "DB_HOSTNAME"
           value = aws_db_instance.mysql.address
+        },
+        {
+          name = "AWS_ACCOUNT_ID",
+          value = var.account_id
         }
       ]
       secrets = [
