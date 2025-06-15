@@ -1,5 +1,5 @@
 data "aws_ecr_repository" "repo" {
-  name = "social-network-repo"
+  name = "social-network"
 }
 
 module "ecs_cluster" {
@@ -28,16 +28,16 @@ resource "aws_security_group" "alb-sg" {
   vpc_id = module.vpc.vpc_id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -48,16 +48,16 @@ resource "aws_security_group" "task_sg" {
   vpc_id = module.vpc.vpc_id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
+    from_port = 8080
+    to_port   = 8080
+    protocol  = "tcp"
     security_groups = [aws_security_group.alb-sg.id]
   }
 }
@@ -71,10 +71,10 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main-tg" {
-  name     = "social-network-target-group"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = module.vpc.vpc_id
+  name        = "social-network-target-group"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
   target_type = "ip"
 
   health_check {
@@ -125,36 +125,36 @@ resource "aws_ecs_task_definition" "main" {
           value = "environment!!"
         }
       ]
-      #   secrets = [
-      #     {
-      #       name      = "DB_USERNAME"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:DB_USERNAME::"
-      #     },
-      #     {
-      #       name      = "DB_PASSWORD"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:DB_PASSWORD::"
-      #     },
-      #     {
-      #       name      = "OPEN_AI_API_KEY"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:OPEN_AI_API_KEY::"
-      #     },
-      #     {
-      #       name      = "JWT_ISSUER_URI"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:JWT_ISSUER_URI::"
-      #     },
-      #     {
-      #       name      = "AWS_CLIENT_ID"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:AWS_CLIENT_ID::"
-      #     },
-      #     {
-      #       name      = "AWS_CLIENT_SECRET"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:AWS_CLIENT_SECRET::"
-      #     },
-      #     {
-      #       name      = "DB_HOSTNAME"
-      #       valueFrom = "arn:aws:secretsmanager:eu-central-1:${var.account_id}:secret:variables-QT5rhd:DB_HOSTNAME::"
-      #     }
-      #   ]
+      secrets = [
+        {
+          name      = "DB_USERNAME"
+          valueFrom = "${aws_secretsmanager_secret.mysql.arn}:username::"
+        },
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "${aws_secretsmanager_secret.mysql.arn}:password::"
+        },
+        {
+          name  = "DB_HOSTNAME"
+          value = aws_db_instance.mysql.address
+        },
+        {
+          name      = "OPENAI_API_KEY"
+          valueFrom = "arn:aws:secretsmanager:eu-central-1:288761758415:secret:social-network-secrets-XixHyr:OPENAIAPI_KEY::"
+        },
+        {
+          name      = "JWT_ISSUER_URI"
+          valueFrom = "arn:aws:secretsmanager:eu-central-1:288761758415:secret:social-network-secrets-XixHyr:JWT_ISSUER_URI::"
+        },
+        {
+          name      = "AWS_CLIENT_ID"
+          valueFrom = "arn:aws:secretsmanager:eu-central-1:288761758415:secret:social-network-secrets-XixHyr:AWS_CLIENT_ID::"
+        },
+        {
+          name      = "AWS_CLIENT_SECRET"
+          valueFrom = "arn:aws:secretsmanager:eu-central-1:288761758415:secret:social-network-secrets-XixHyr:AWS_CLIENT_SECRET::"
+        },
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
