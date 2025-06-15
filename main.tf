@@ -10,7 +10,7 @@ terraform {
     bucket         = "terraform-state-bucket-288761758415"
     key            = "social-network/terraform.tfstate"
     region         = "eu-central-1"
-    dynamodb_table = "terraform-locks"
+    use_lockfile   = true
     encrypt        = true
   }
 }
