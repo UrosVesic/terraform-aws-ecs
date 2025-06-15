@@ -4,11 +4,14 @@ resource "random_password" "mysql_password" {
 }
 
 resource "aws_secretsmanager_secret" "mysql" {
-  name        = "mysql-master-user-secret-3"
+  name        = "mysql-master-user-secret-${random_string.suffix.result}"
   description = "Master user credentials"
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+}
+
+resource "random_string" "suffix" {
+  length  = 6
+  upper   = false
+  special = false
 }
 
 resource "aws_secretsmanager_secret_version" "mysql_version" {

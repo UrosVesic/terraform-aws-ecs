@@ -123,6 +123,10 @@ resource "aws_ecs_task_definition" "main" {
         {
           name  = "ENV"
           value = "environment!!"
+        },
+        {
+          name  = "DB_HOSTNAME"
+          value = aws_db_instance.mysql.address
         }
       ]
       secrets = [
@@ -133,10 +137,6 @@ resource "aws_ecs_task_definition" "main" {
         {
           name      = "DB_PASSWORD"
           valueFrom = "${aws_secretsmanager_secret.mysql.arn}:password::"
-        },
-        {
-          name  = "DB_HOSTNAME"
-          value = aws_db_instance.mysql.address
         },
         {
           name      = "OPENAI_API_KEY"
